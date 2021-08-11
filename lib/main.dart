@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'package:flutter_provider_app/compteur_provider.dart';
 import 'package:flutter_provider_app/cours_provider.dart';
-
 import 'package:provider/provider.dart';
 
 void main() {
@@ -26,7 +23,7 @@ class MyApp extends StatelessWidget {
       // ),
       home: ChangeNotifierProvider(
         create: (_) => CoursProvider(),
-        child: const MyHomePage(title: 'Flutter Provider Demo Page'),
+        child: const MyHomePage(title: 'Provider:'),
       ),
     );
   }
@@ -39,33 +36,69 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final _compteurProvider = Provider.of<CompteurProvider>(context);
     final _coursProvider = Provider.of<CoursProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            '$title - ${_coursProvider.lesCours.length} cours aujoud' 'hui'),
+        title:
+            Text("$title ${_coursProvider.lesCours.length} cours aujoud'hui"),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Recharger!',
+            onPressed: _coursProvider.chargerCours,
+          ),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Recharger!',
+            onPressed: _coursProvider.chargerCours,
+          ),
+        ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Nombre de cours ce jour :',
-            ),
-            Text(
-              '${_coursProvider.lesCours.length}',
-              style: Theme.of(context).textTheme.headline1,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _coursProvider.chargerCours,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      body: ListView.builder(
+          itemCount: _coursProvider.lesCours.length,
+          itemBuilder: (context, index) {
+            final Map<String, dynamic> item = _coursProvider.lesCours[index];
+            final _matiereJson = item["matiere_json"] ?? 'test';
+            return Card(
+              child: Row(
+                children: <Widget>[
+                  Column(
+                    children: [
+                      Container(
+                        height: 100,
+                        width: 3,
+                        color:
+                            HexColor.fromHex(item["formation_color_json_v2"]),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(item["debut_fin_json_v2"]),
+                        Text(item["formation_json_v2"]),
+                        Text(item["intervenant_json"]),
+                        Text(_matiereJson),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
     );
+  }
+}
+
+extension HexColor on Color {
+  /// String is in the format "aabbcc" or "ffaabbcc" with an optional leading "#".
+  static Color fromHex(String hexString) {
+    final buffer = StringBuffer();
+    if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
+    buffer.write(hexString.replaceFirst('#', ''));
+    return Color(int.parse(buffer.toString(), radix: 16));
   }
 }
