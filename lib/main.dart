@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_provider_app/compteur_provider.dart';
+import 'package:flutter_provider_app/cours_provider.dart';
+
 import 'package:provider/provider.dart';
 
 void main() {
@@ -17,9 +20,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      // home: ChangeNotifierProvider(
+      //   create: (_) => CompteurProvider(100),
+      //   child: const MyHomePage(title: 'Flutter Demo Home Page'),
+      // ),
       home: ChangeNotifierProvider(
-        create: (_) => CompteurProvider(100),
-        child: const MyHomePage(title: 'Flutter Demo Home Page'),
+        create: (_) => CoursProvider(),
+        child: const MyHomePage(title: 'Flutter Provider Demo Page'),
       ),
     );
   }
@@ -32,28 +39,30 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _compteurProvider = Provider.of<CompteurProvider>(context);
+    //final _compteurProvider = Provider.of<CompteurProvider>(context);
+    final _coursProvider = Provider.of<CoursProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('$title - ${_compteurProvider.counter}'),
+        title: Text(
+            '$title - ${_coursProvider.lesCours.length} cours aujoud' 'hui'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'You have pushed the button this many times:',
+              'Nombre de cours ce jour :',
             ),
             Text(
-              '${_compteurProvider.counter}',
+              '${_coursProvider.lesCours.length}',
               style: Theme.of(context).textTheme.headline1,
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _compteurProvider.increment,
+        onPressed: _coursProvider.chargerCours,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
