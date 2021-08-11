@@ -50,7 +50,7 @@ class MyHomePage extends StatelessWidget {
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.calendar_today_outlined),
-            tooltip: 'Changer de date',
+            tooltip: 'Changer la date',
             onPressed: () {
               _selectionDate(context)
                   .then((value) => _coursProvider.chargerCoursDuJour(value));
@@ -58,40 +58,48 @@ class MyHomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView.builder(
-          itemCount: _coursProvider.lesCours.length,
-          itemBuilder: (context, index) {
-            final Map<String, dynamic> item = _coursProvider.lesCours[index];
-            final _matiereJson = item["matiere_json"] ?? 'test';
-            return Card(
-              child: Row(
-                children: <Widget>[
-                  Column(
-                    children: [
-                      Container(
-                        height: 100,
-                        width: 3,
-                        color:
-                            HexColor.fromHex(item["formation_color_json_v2"]),
+      body: _coursProvider.lesCours.isEmpty
+          ? const Center(
+              child: Text(
+                "Rien à afficher pour la date choisie...",
+                style: TextStyle(fontSize: 20),
+              ),
+            )
+          : ListView.builder(
+              itemCount: _coursProvider.lesCours.length,
+              itemBuilder: (context, index) {
+                final Map<String, dynamic> item =
+                    _coursProvider.lesCours[index];
+                final _matiereJson = item["matiere_json"] ?? 'test';
+                return Card(
+                  child: Row(
+                    children: <Widget>[
+                      Column(
+                        children: [
+                          Container(
+                            height: 100,
+                            width: 3,
+                            color: HexColor.fromHex(
+                                item["formation_color_json_v2"]),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(item["debut_fin_json_v2"]),
+                            Text(item["formation_json_v2"]),
+                            Text(item["intervenant_json"]),
+                            Text(_matiereJson),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(item["debut_fin_json_v2"]),
-                        Text(item["formation_json_v2"]),
-                        Text(item["intervenant_json"]),
-                        Text(_matiereJson),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }),
+                );
+              }),
     );
   }
 
