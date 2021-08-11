@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_provider_app/cours_provider.dart';
 import 'package:provider/provider.dart';
 import 'hexcolor.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,10 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      // home: ChangeNotifierProvider(
-      //   create: (_) => CompteurProvider(100),
-      //   child: const MyHomePage(title: 'Flutter Demo Home Page'),
-      // ),
+      debugShowCheckedModeBanner: false,
       home: ChangeNotifierProvider(
         create: (_) => CoursProvider(),
         child: const MyHomePage(title: 'Provider:'),
@@ -39,15 +37,25 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final _coursProvider = Provider.of<CoursProvider>(context);
 
+    var now = DateTime.now();
+    var formatter = DateFormat('yyyy-MM-dd');
+    String formattedDate = formatter.format(now);
+
+    // Envoyer la date dans le provider
+    _coursProvider.jour = formattedDate;
+
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text("$title ${_coursProvider.lesCours.length} cours aujoud'hui"),
+        title: Text(
+            "${_coursProvider.quelJour} : ${_coursProvider.lesCours.length} cours prévus"),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Recharger!',
-            onPressed: _coursProvider.chargerCours,
+            icon: const Icon(Icons.calendar_today_outlined),
+            tooltip: 'Changer de date',
+            onPressed: () {
+              _selectionDate(context)
+                  .then((value) => _coursProvider.chargerCoursDuJour(value));
+            },
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -91,5 +99,19 @@ class MyHomePage extends StatelessWidget {
             );
           }),
     );
+  }
+
+  Future<String> _selectionDate(BuildContext context) async {
+    DateTime? _dateChoisie = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2010),
+        lastDate: DateTime(2030));
+
+    if (_dateChoisie != null) {
+      return _dateChoisie.toString();
+    } else {
+      return "";
+    }
   }
 }
