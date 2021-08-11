@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_provider_app/cours_provider.dart';
 import 'package:provider/provider.dart';
 import 'hexcolor.dart';
-import 'package:intl/intl.dart';
+//import 'package:intl/intl.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: ChangeNotifierProvider(
         create: (_) => CoursProvider(),
-        child: const MyHomePage(title: 'Provider:'),
+        child: const MyHomePage(title: 'Planning'),
       ),
     );
   }
@@ -37,17 +37,16 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final _coursProvider = Provider.of<CoursProvider>(context);
 
-    var now = DateTime.now();
-    var formatter = DateFormat('yyyy-MM-dd');
-    String formattedDate = formatter.format(now);
+    // var now = DateTime.now();
+    // var formatter = DateFormat('yyyy-MM-dd');
+    // String formattedDate = formatter.format(now);
 
-    // Envoyer la date dans le provider
-    _coursProvider.jour = formattedDate;
+    // // Envoyer la date dans le provider
+    // _coursProvider.jour = formattedDate;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            "${_coursProvider.quelJour} : ${_coursProvider.lesCours.length} cours prévus"),
+        title: Text(title),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.calendar_today_outlined),
@@ -56,11 +55,6 @@ class MyHomePage extends StatelessWidget {
               _selectionDate(context)
                   .then((value) => _coursProvider.chargerCoursDuJour(value));
             },
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Recharger!',
-            onPressed: _coursProvider.chargerCours,
           ),
         ],
       ),
@@ -102,6 +96,8 @@ class MyHomePage extends StatelessWidget {
   }
 
   Future<String> _selectionDate(BuildContext context) async {
+    String _result = "";
+
     DateTime? _dateChoisie = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
@@ -109,9 +105,8 @@ class MyHomePage extends StatelessWidget {
         lastDate: DateTime(2030));
 
     if (_dateChoisie != null) {
-      return _dateChoisie.toString();
-    } else {
-      return "";
+      _result = _dateChoisie.toString().substring(0, 10);
     }
+    return (_result);
   }
 }
