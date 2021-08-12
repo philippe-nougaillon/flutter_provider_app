@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_provider_app/cours_provider.dart';
 import 'package:provider/provider.dart';
-import 'hexcolor.dart';
+import 'cours_widget.dart';
 
 void main() {
   runApp(const MyApp());
@@ -43,7 +43,7 @@ class MyHomePage extends StatelessWidget {
           actions: <Widget>[
             IconButton(
               icon: const Icon(Icons.calendar_today_outlined),
-              tooltip: 'Changer la date',
+              tooltip: 'Changer de date',
               onPressed: () {
                 _selectionDate(context)
                     .then((value) => _coursProvider.chargerCoursDuJour(value));
@@ -83,48 +83,5 @@ class MyHomePage extends StatelessWidget {
       _result = _dateChoisie.toString().substring(0, 10);
     }
     return (_result);
-  }
-}
-
-class CoursWidget extends StatelessWidget {
-  const CoursWidget({
-    Key? key,
-    required this.item,
-    required matiereJson,
-  })  : _matiereJson = matiereJson,
-        super(key: key);
-
-  final Map<String, dynamic> item;
-  final String _matiereJson;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Row(
-        children: <Widget>[
-          Column(
-            children: [
-              Container(
-                height: 100,
-                width: 3,
-                color: HexColor.fromHex(item["formation_color_json_v2"]),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(item["debut_fin_json_v2"]),
-                Text(item["formation_json_v2"]),
-                Text(item["intervenant_json"]),
-                Text(_matiereJson),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
