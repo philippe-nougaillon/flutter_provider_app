@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_provider_app/cours_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'cours_widget.dart';
 
 void main() {
@@ -23,6 +24,13 @@ class MyApp extends StatelessWidget {
         create: (_) => CoursProvider(),
         child: const MyHomePage(title: 'Planning'),
       ),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('fr', 'FR'),
+      ],
     );
   }
 }
