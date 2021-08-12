@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_provider_app/cours_provider.dart';
 import 'package:provider/provider.dart';
 import 'hexcolor.dart';
-//import 'package:intl/intl.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,74 +36,42 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final _coursProvider = Provider.of<CoursProvider>(context);
 
-    // var now = DateTime.now();
-    // var formatter = DateFormat('yyyy-MM-dd');
-    // String formattedDate = formatter.format(now);
-
-    // // Envoyer la date dans le provider
-    // _coursProvider.jour = formattedDate;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.calendar_today_outlined),
-            tooltip: 'Changer la date',
-            onPressed: () {
-              _selectionDate(context)
-                  .then((value) => _coursProvider.chargerCoursDuJour(value));
-            },
-          ),
-        ],
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.calendar_today_outlined),
+              tooltip: 'Changer la date',
+              onPressed: () {
+                _selectionDate(context)
+                    .then((value) => _coursProvider.chargerCoursDuJour(value));
+              },
+            ),
+          ],
+        ),
+        body: _coursProvider.lesCours.isEmpty
+            ? const Center(
+                child: Text(
+                  "Rien à afficher pour la date choisie...",
+                  style: TextStyle(fontSize: 20),
+                ),
+              )
+            : ListView.builder(
+                itemCount: _coursProvider.lesCours.length,
+                itemBuilder: (context, index) {
+                  final Map<String, dynamic> item =
+                      _coursProvider.lesCours[index];
+                  final _matiereJson = item["matiere_json"] ?? 'test';
+                  return CoursWidget(item: item, matiereJson: _matiereJson);
+                }),
       ),
-      body: _coursProvider.lesCours.isEmpty
-          ? const Center(
-              child: Text(
-                "Rien à afficher pour la date choisie...",
-                style: TextStyle(fontSize: 20),
-              ),
-            )
-          : ListView.builder(
-              itemCount: _coursProvider.lesCours.length,
-              itemBuilder: (context, index) {
-                final Map<String, dynamic> item =
-                    _coursProvider.lesCours[index];
-                final _matiereJson = item["matiere_json"] ?? 'test';
-                return Card(
-                  child: Row(
-                    children: <Widget>[
-                      Column(
-                        children: [
-                          Container(
-                            height: 100,
-                            width: 3,
-                            color: HexColor.fromHex(
-                                item["formation_color_json_v2"]),
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(item["debut_fin_json_v2"]),
-                            Text(item["formation_json_v2"]),
-                            Text(item["intervenant_json"]),
-                            Text(_matiereJson),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }),
     );
   }
 
   Future<String> _selectionDate(BuildContext context) async {
-    String _result = "";
+    String _result = '';
 
     DateTime? _dateChoisie = await showDatePicker(
         context: context,
@@ -116,5 +83,48 @@ class MyHomePage extends StatelessWidget {
       _result = _dateChoisie.toString().substring(0, 10);
     }
     return (_result);
+  }
+}
+
+class CoursWidget extends StatelessWidget {
+  const CoursWidget({
+    Key? key,
+    required this.item,
+    required matiereJson,
+  })  : _matiereJson = matiereJson,
+        super(key: key);
+
+  final Map<String, dynamic> item;
+  final String _matiereJson;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Row(
+        children: <Widget>[
+          Column(
+            children: [
+              Container(
+                height: 100,
+                width: 3,
+                color: HexColor.fromHex(item["formation_color_json_v2"]),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(item["debut_fin_json_v2"]),
+                Text(item["formation_json_v2"]),
+                Text(item["intervenant_json"]),
+                Text(_matiereJson),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
